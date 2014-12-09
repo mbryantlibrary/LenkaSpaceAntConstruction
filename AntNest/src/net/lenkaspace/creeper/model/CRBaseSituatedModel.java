@@ -1,5 +1,6 @@
 package net.lenkaspace.creeper.model;
 
+import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Polygon;
 
@@ -27,6 +28,7 @@ public class CRBaseSituatedModel extends CRBaseModel {
 	protected CRWorld world;
 	protected boolean isVisible;
 	protected SHAPE shape;
+        protected boolean isRenderedByImage = true;
 	
 	public int binIndex;
 	
@@ -257,5 +259,14 @@ public class CRBaseSituatedModel extends CRBaseModel {
 	public void setIsVisible(boolean value_) { isVisible = value_; }
 	
 	public SHAPE getShape() { return shape; }
+        
+        public boolean isRenderedByImage() { return isRenderedByImage; }
+        public void setRenderedByImage(boolean image) { isRenderedByImage = image; }
+        
+        public void paint(Graphics g) {
+            //to be overridden
+            if(isRenderedByImage())
+                return;
+        }
 	
 }

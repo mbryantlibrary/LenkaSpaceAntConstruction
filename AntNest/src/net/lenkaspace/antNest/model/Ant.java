@@ -239,6 +239,8 @@ public class Ant extends BaseWorldObject {
 	 * Main update function.
 	 */
 	public void update() {
+            
+            System.out.println(((World)world).getPheromoneConc(position));
 		
 		//-- output carrying info
 		if (kind == KIND.EXTERNAL) {
@@ -249,7 +251,9 @@ public class Ant extends BaseWorldObject {
 					CROutputPopup.getSingleton().displayOutput("    " + object.getId() + "   rot " + object.getRotation() + "  pos" + object.getPosition().x + " " + object.getPosition().y);
 				}
 			}
-		}
+		} else {
+                    isDroppingPheromone = true;
+                }
 			
 		
 		
@@ -508,5 +512,7 @@ public class Ant extends BaseWorldObject {
 		}
 		this.setRotation(rotation + angleChange);
 	}
+        
+        public boolean isDroppingPheromone = false;
 
 }

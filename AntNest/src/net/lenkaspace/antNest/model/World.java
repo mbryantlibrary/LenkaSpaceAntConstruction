@@ -25,6 +25,7 @@ public class World extends CRBinWorld {
 	private ArrayList<Stone> stones;
 	private ArrayList<Ant> ants;
 	private BroodCluster broodCluster;
+        private Pheromone pheromone;
 	
 	public World(CRController controller_) {
 		super(new CRVector3d(25,25,0), 0, new CRVector3d(660,660,0), controller_);
@@ -104,6 +105,9 @@ public class World extends CRBinWorld {
 		broodCluster = new BroodCluster(positions,sizes, this);
 		this.addDynamicModel(broodCluster);
 		
+                pheromone = new Pheromone();
+                pheromone.setIsVisible(true);
+                this.addSituatedModel(pheromone);
 
 		//-- create stones
 		if (currentWorld != TEST_INTERNAL_WORLD && currentWorld != TEST_EXTERNAL_WORLD && currentWorld != FOUR_SITES_WORLD && currentWorld != TEST_WORLD) {
@@ -311,7 +315,19 @@ public class World extends CRBinWorld {
 	}
 	
 	//==================================== UPDATE LOOP ====================================
+
+    @Override
+    public void update() {
+        super.update();
+        for(Ant ant : ants)
+            if(ant.isDroppingPheromone)
+                pheromone.addPheromoneAct((int)Math.round(ant.getPosition().x), (int)Math.round(ant.getPosition().y));
+        pheromone.update();
+    }
 	
+    public double getPheromoneConc(CRVector3d location) {
+        return pheromone.getGradient(Math.round((float) location.x), (int) Math.round(location.y));
+    }
 	
 	
 	//==================================== GETTERS / SETTERS ====================================

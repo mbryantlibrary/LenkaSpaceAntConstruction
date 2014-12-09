@@ -72,17 +72,23 @@ public class CRRenderer extends Component implements ActionListener {
 	    	//-- draw all renderable objects in the world
 		    for (CRBaseSituatedModel situatedModel : world.getSituatedModels() ) {
 		    	String imageFileName = situatedModel.getImageFileName();
-		    	if (situatedModel.isVisible() && imageFileName != null && imageFileName != "") {
-		    		//-- get the image either from Creeper native CRImageProvider or from a specified image provider
-		    		BufferedImage image;
-		    		if (imageFileName == CR_BLACK_DOT || imageFileName == CR_BLUE_DOT || imageFileName == CR_GRAY_DOT || imageFileName == CR_GREEN_DOT || imageFileName == CR_PURPLE_DOT || imageFileName == CR_RED_DOT) {
-		    			image = crImageProvider.getImage(imageFileName);
-		    		} else {
-		    			image = imageProvider.getImage(imageFileName);
-		    		}
-		    		if (image != null) {
-		    			drawImageAt(image, situatedModel.getPosition(), situatedModel.getSize(), Math.toRadians(situatedModel.getRotation()), g);
-		    		}
+		    	if (situatedModel.isVisible()) {
+                            if (situatedModel.isRenderedByImage()) {
+                                if(imageFileName != null && imageFileName != "") {
+                                    //-- get the image either from Creeper native CRImageProvider or from a specified image provider
+                                    BufferedImage image;
+                                    if (imageFileName == CR_BLACK_DOT || imageFileName == CR_BLUE_DOT || imageFileName == CR_GRAY_DOT || imageFileName == CR_GREEN_DOT || imageFileName == CR_PURPLE_DOT || imageFileName == CR_RED_DOT) {
+                                            image = crImageProvider.getImage(imageFileName);
+                                    } else {
+                                            image = imageProvider.getImage(imageFileName);
+                                    }
+                                    if (image != null) {
+                                            drawImageAt(image, situatedModel.getPosition(), situatedModel.getSize(), Math.toRadians(situatedModel.getRotation()), g);
+                                    }
+                                }
+                            } else {
+                                situatedModel.paint(g);
+                            }
 		    	}
 		    }
 	    }
