@@ -16,6 +16,8 @@ public class Settings {
 	public double pheromoneMovementThreshold;
 	public int normalBroodClusterDiam;
 	public int broodClusterDistance;
+        
+        public boolean useBroodPheromones;
 	
 	
 	public String currentWorld;
@@ -34,10 +36,12 @@ public class Settings {
 		showAnts = true;
 		showStones = true;
 		showPheromone = true;
-		usePheromoneTemplate = false;
+		usePheromoneTemplate = true;
 		currentWorld = World.TEST_INTERNAL_WORLD;
 		pheromoneMovementThreshold = 1;
 		normalBroodClusterDiam = 300;
 		broodClusterDistance=100;
+                useBroodPheromones = false;
+                
 	}
 }

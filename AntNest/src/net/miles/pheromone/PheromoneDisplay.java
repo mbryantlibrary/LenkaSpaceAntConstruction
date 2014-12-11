@@ -22,8 +22,8 @@ public class PheromoneDisplay extends JPanel{
     private final int gridW = 66;
     private final int d = 10;
     
-    public double diffusion = 0.5;
-    public double decay = 0.9;
+    public double diffusion = 0.6;
+    public double decay = 1.0 - 1E-1;
     
     
     DoubleMatrix conc = DoubleMatrix.zeros(66,66);
@@ -32,7 +32,7 @@ public class PheromoneDisplay extends JPanel{
         
         setPreferredSize(new Dimension(actW, actW));
         
-        addPheromoneGrid(0, 0);
+        //addPheromoneGrid(0, 0);
         
     }
     
@@ -40,25 +40,32 @@ public class PheromoneDisplay extends JPanel{
         int i,j;
         i = Math.round(y / d);
         j = Math.round(x / d);
-        System.out.printf("Adding at point %d,%d in grid %d,%d\n",x,y,i,j);
-        addPheromoneGrid(i, j);
+        addPheromoneGrid(i, j, 0.5);
     }
     
-    public void addPheromoneGrid(int i, int j) {
+    
+    public void addPheromoneGrid(int i, int j, double amount) {
+        double newAmount = conc.get(i,j) + amount;
+        
+        if (newAmount > 1.0)
+            newAmount = 1.0;
+        
         //put in center
-        conc.put(i,j,0.5);
+        conc.put(i,j,newAmount);
         
-        //put around center
-        if(i > 0)
-            conc.put(i-1,j,0.5*diffusion);
-        if(j > 0)
-            conc.put(i,j-1,0.5*diffusion);
-        if(i < gridW)
-            conc.put(i+1,j,0.5*diffusion);
-        if(j < gridW)
-            conc.put(i,j+1,0.5*diffusion);
         
-        repaint();
+        if(amount > 0.1) {
+            amount *= diffusion;
+            //put around center
+            if(i > 0)
+                conc.put(i-1,j,amount);
+            if(j > 0)
+                conc.put(i,j-1,amount);
+            if(i < gridW)
+                conc.put(i+1,j,amount);
+            if(j < gridW)
+                conc.put(i,j+1,amount);
+        }
     }
     
     public void step() {

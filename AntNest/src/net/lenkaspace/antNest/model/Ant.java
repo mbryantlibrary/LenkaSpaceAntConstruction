@@ -1,4 +1,4 @@
-package net.lenkaspace.antNest.model;
+ package net.lenkaspace.antNest.model;
 
 import java.util.ArrayList;
 
@@ -240,7 +240,6 @@ public class Ant extends BaseWorldObject {
 	 */
 	public void update() {
             
-            System.out.println(((World)world).getPheromoneConc(position));
 		
 		//-- output carrying info
 		if (kind == KIND.EXTERNAL) {
@@ -396,15 +395,27 @@ public class Ant extends BaseWorldObject {
 				if (feltResistance > 1) {
 					feltResistance = 1;
 				}
-				double dropProbability = 1/1.6*Math.abs(Math.log(1-0.8*(feltResistance+0.00000000001)));
-				double hormoneFactor = 0;
-				if (Settings.getSingleton().usePheromoneTemplate && kind == KIND.INTERNAL) {
+				double dropProbability = 1/1.6*Math.abs(Math.log(1-0.2*(feltResistance+0.00000000001)));
+				double hormoneFactor;
+                                boolean useBrood = Settings.getSingleton().useBroodPheromones;
+                                if(useBrood)
 					hormoneFactor = broodCluster.getPheromoneConcentrationAt(position);
+                                    else
+                                        hormoneFactor = ((World)world).getPheromoneConc(position);
+				if (Settings.getSingleton().usePheromoneTemplate && useBrood && kind == KIND.EXTERNAL) {
+                                    
 					//dropProbability = resistanceMultiplier*Math.pow(feltResistance,3)  + Math.pow(hormoneFactor,3);
 					//dropProbability = resistanceMultiplier*Math.pow(feltResistance,3) + Math.abs(Math.pow(1/7.0 * Math.log(hormoneFactor),2));
-					dropProbability += 	Math.abs(Math.pow(1/7.0 * Math.log(hormoneFactor),1));
+					dropProbability += 	Math.abs(Math.pow(2 * Math.log(hormoneFactor),1));
 					//System.out.println(id + "  " + position.toString() + "  horm  " + hormoneFactor + "   drop prob" + dropProbability);
-				}
+				} else if (Settings.getSingleton().usePheromoneTemplate && kind == KIND.INTERNAL) {
+					//dropProbability = resistanceMultiplier*Math.pow(feltResistance,3)  + Math.pow(hormoneFactor,3);
+					//dropProbability = resistanceMultiplier*Math.pow(feltResistance,3) + Math.abs(Math.pow(1/7.0 * Math.log(hormoneFactor),2));
+                                    if(useBrood)
+                                        dropProbability += Math.abs(Math.pow(1/7.0 * Math.log(hormoneFactor),1));
+                                    else
+					dropProbability -= 	Math.abs(Math.pow(2 * Math.log(hormoneFactor),1));
+                                }
 				if (kind == KIND.PASSIVE) {
 					dropProbability = 1;
 				}

@@ -6,11 +6,11 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriter;
 
 import org.apache.commons.io.FileUtils;
 
-import com.sun.image.codec.jpeg.JPEGCodec;
-import com.sun.image.codec.jpeg.JPEGImageEncoder;
 
 /**
  * Provides static method for saving Java component images and text into files.
@@ -21,8 +21,7 @@ import com.sun.image.codec.jpeg.JPEGImageEncoder;
 public class CRFileIOHelper {
 
 	private static BufferedImage bi;
-	private static ByteArrayOutputStream boutstream;
-	private static JPEGImageEncoder encoder;
+	private static ImageWriter iw;
 	
 	/**
 	 * Print a Java Component into an image file
@@ -34,23 +33,14 @@ public class CRFileIOHelper {
 			//-- add .jpg to file name:
 			fileName += ".jpg";
 			try { 
-				if (boutstream == null) {
-					boutstream = new ByteArrayOutputStream() ;  
-				}
 				
 				Rectangle rect = component_.getBounds() ; 
 				if (bi == null || bi.getWidth() != rect.width || bi.getHeight() != rect.getHeight()) {
 					bi = new BufferedImage( rect.width,rect.height, BufferedImage.TYPE_USHORT_565_RGB) ; 
-					encoder = JPEGCodec.createJPEGEncoder(boutstream) ; 
 				}
 				component_.paint(bi.getGraphics() ) ; 
 				
-				encoder.encode(bi) ; 
-				FileOutputStream fimage = new FileOutputStream(new File(fileName) ) ; 
-				boutstream.writeTo(fimage) ; 
-				fimage.close() ;
-				//-- clear the output stream:
-				boutstream.reset();
+				ImageIO.write(bi, "jpg", new File(fileName));
 				
 			} catch (Exception e){
 				System.err.println("Error in writing " + fileName +":" +e.getMessage()) ;

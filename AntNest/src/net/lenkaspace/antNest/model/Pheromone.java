@@ -20,8 +20,8 @@ public class Pheromone extends BaseWorldObject {
     private final int gridW = 66;
     private final int d = 10;
     
-    public double diffusion = 0.5;
-    public double decay = 0.999;
+    public double diffusion = 0.8;
+    public double decay = 1.0 - 1E-3;
     
     
     DoubleMatrix conc = DoubleMatrix.zeros(66,66);
@@ -29,36 +29,51 @@ public class Pheromone extends BaseWorldObject {
     public Pheromone() {
         super(0, 0, new CRVector3d(0,0,0), new CRVector3d(660,660,0), 0, "");
         isRenderedByImage = false;
-        addPheromoneGrid(50, 50);
+        addPheromoneGrid(50, 50, 0.5);
     }
 
     public double getGradient(int x, int y) {
         int i,j;
         i = Math.round(y / d);
         j = Math.round(x / d);
-        return conc.get(i,j);
+        if(i > 0 & i < gridW-1 & j > 0 & j < gridW-1)
+            return conc.get(i,j);
+        return 0.0;
     }
     
     public void addPheromoneAct(int x, int y) {
         int i,j;
-        i = Math.round(y / d);
-        j = Math.round(x / d);
-        addPheromoneGrid(i, j);
+        i = (int) Math.round(Math.floor(y / d));
+        j = (int) Math.round(Math.floor(x / d));
+        if(i==66 | j==66)
+            System.out.println("");
+        if(i > 0 & i < gridW-1 & j > 0 & j < gridW-1)
+            addPheromoneGrid(i, j, 0.5);
     }
     
-    public void addPheromoneGrid(int i, int j) {
-        //put in center
-        conc.put(i,j,0.5);
+    public void addPheromoneGrid(int i, int j, double amount) {
+        addPheromone(i, j, amount);
         
-        //put around center
-        if(i > 0)
-            conc.put(i-1,j,0.5*diffusion);
-        if(j > 0)
-            conc.put(i,j-1,0.5*diffusion);
-        if(i < gridW)
-            conc.put(i+1,j,0.5*diffusion);
-        if(j < gridW)
-            conc.put(i,j+1,0.5*diffusion);
+        if(amount > 0.01) {
+            //put around center
+            if(i > 0)
+                addPheromone(i-1,j,amount* diffusion);
+            if(j > 0)
+                addPheromone(i,j-1,amount* diffusion);
+            if(i < gridW)
+                addPheromone(i+1,j,amount* diffusion);
+            if(j < gridW)
+                addPheromone(i,j+1,amount* diffusion);
+        }
+    }
+    
+    private void addPheromone(int i, int j, double amount) {
+        double newAmount = conc.get(i,j) + amount;
+        
+        if (newAmount > 1.0)
+            newAmount = 1.0;
+        
+        conc.put(i,j,newAmount);
     }
     
     public void step() {
@@ -82,7 +97,7 @@ public class Pheromone extends BaseWorldObject {
                     if (alpha > 1f)
                         alpha = 1f;
                     g2.setColor(new Color(
-                            1f,1f - cVal ,1f ,alpha
+                            1f,1f,1f  - cVal ,alpha
                     ));
                     g2.fillRect(x+1, y+1, d-1, d-1);
                 }
